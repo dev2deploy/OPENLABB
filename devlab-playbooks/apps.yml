@@ -1,0 +1,16 @@
+---
+- name: Manage ArgoCD Application(s)
+  hosts: localhost
+  gather_facts: true
+  roles:
+    - apps
+  vars:
+    # see ./infrastructure/roles/apps/meta/argument_specs.yaml for definitions
+    git_push_force: false
+    git_push: false
+    app_no_loop_pause: true
+    app_tasks: true
+    batch_apps: true
+    # app_skip_list:
+    app_deploy_list:
+      - intel-device-plugin
