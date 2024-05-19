@@ -1,3 +1,95 @@
+<h1 tabindex="-1" dir="auto" style="bottom-border:none;"><img src="https://camo.githubusercontent.com/0b88a728a74d44cb11f842cbed1cacb61f4d67f09b3dcf5926ac4767a1bb1c27/68747470733a2f2f692e696d6775722e636f6d2f7031527a586a512e706e67" width="144px" height="144px" align="left"/>
+
+<!-- markdownlint-disable-next-line MD013 -->
+<a id="user-content-homelab" class="anchor" aria-hidden="true" href="#homelab"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a>
+Homelab
+</h1>
+
+> K8S cluster built with Ansible and managed using ArgoCD for GitOps
+
+<div align="center">
+
+[![Discord](https://img.shields.io/badge/discord-chat-7289DA.svg?maxAge=60&style=flat-square&logo=discord)](https://discord.gg/DNCynrJ)&nbsp;&nbsp;&nbsp;
+[![k8s](https://img.shields.io/badge/k8s-v1.29.2-blue?style=flat-square&logo=kubernetes)](https://k8s.io/)&nbsp;&nbsp;&nbsp;
+[![debian](https://img.shields.io/badge/debian-bookworm-C70036?style=flat-square&logo=debian&logoColor=C70036)](https://debian.org)&nbsp;&nbsp;&nbsp;
+[![GitHub last commit](https://img.shields.io/github/last-commit/clearlybaffled/homelab/main?style=flat-square&logo=git&color=F05133)](https://github.com/clearlybaffled/homelab/commits/main)
+
+[![WTFPL](https://img.shields.io/github/license/clearlybaffled/homelab?style=flat-square&color=darkred)](http://www.wtfpl.net/)&nbsp;&nbsp;&nbsp;
+[![Linters](https://github.com/clearlybaffled/homelab/actions/workflows/linters.yaml/badge.svg)](https://github.com/clearlybaffled/homelab/actions/workflows/linters.yaml)&nbsp;&nbsp;&nbsp;
+[![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/clearlybaffled/homelab?style=flat-square)](https://libraries.io/github/clearlybaffled/homelab)
+</div>
+<br/>
+
+Welcome to my homelab!
+The repository is mostly focused on a modest kubernetes cluster with one control plane/node running all of my self hosted services and storage,
+but it also serves as the Infrastructure-as-Code (IaC) for my entire home network and devices, to include: an OpnSense gateway/firewall,
+a couple of workstations, wireless devices, and a Cisco switch.
+Ultimately, this will include all applications for managing home IT systems.
+
+## 🤯 Features
+
+- [x] Kubernetes cluster deployment using kubeadm
+- [x] Infrastructure Automation with Ansible to provision hosts, clusters, devices, etc.
+- [x] Offline Root CA / Scripted PKI management using `openssl(1)`
+- [x] Manage cluster state and apps using GitOps and ArgoCD
+- [x] FreeIPA server
+- [ ] RADIUS server
+- [ ] Remote access via VPN
+
+## ⌨️ Getting Started
+
+```console
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -U -r requirements.txt
+ansible-galaxy collection install -U -r requirements.yaml
+ansible-playbook homelab.yml
+```
+
+# 🍇 Cluster
+
+## Infrastructure Automation
+
+Host buildout is handled by [Ansible][ansible-uri] automation.
+The whole lab is built out from a [top level playbook](./homelab.yml), with segment specific playbooks under the [`playbooks/`](./playbooks/) directory.
+(As a convention, all Ansible yaml files are suffixed `.yml` to allow VSCode to distinguish between those and all other yaml files.)
+The full task list can be found in the [infrastructure](./infrastructure/README.md) folder, but as an overview, it will:
+
+- Install system packages and any other necessary system related setup
+- Pull down cluster images and binaries
+- Install container runtime and start kubelet
+- Run `kubeadm` to setup to create cluster
+- Creates a separate user to continue setting up the cluster with to get away from using the admin credentials
+- Applies CNI configuration
+- Generates Application files for every cluster app and drops them into [`cluster/bootstrap`](./cluster/bootstrap) and Kustomization files into[`cluster/apps`](./cluster/apps) for the respective apps
+- Bootstraps the cluster by starting ArgoCD and then applying [`cluster/cluster.yaml`](./cluster/cluster.yaml)
+
+## GitOps
+
+[ArgoCD][argocd-uri] watches all subfolders under the [`cluster`](./cluster) folder (see Directories below) and makes the changes to my cluster based on the YAML manifests.
+
+The way Argo works for me here is (almost) every file in the [`cluster/bootstrap`](./cluster/bootstrap) directory will define an `argoproj.io/v1alpha1/Application` that points to a corresponding folder under [`cluster/apps`](./cluster/apps).
+The `Application` will apply any manifest files it finds in that directory,
+in addition to any Helm Charts or Kustomizations [that may also be defined](https://argo-cd.readthedocs.io/en/stable/user-guide/multiple_sources/) within the `Application`'s spec.
+One or more Helm `values.yaml` files are in each directory and each helm definition in the `Application` refers to the specific values file to apply to that chart.
+
+## Directories
+
+This Git repository contains the following top level directories.
+<!-- markdownlint-disable MD013 -->
+```sh
+📁 cluster         # Kubernetes cluster defined in code
+├─📁 apps          # Apps deployed into my cluster grouped by namespace
+├─📁 argocd        # Main Argo configuration of repository
+└─📁 bootstrap     # Cluster initialization flies (Argo Applications) also grouped by namespace
+📁 infrastructure  # Ansible files
+├─📁 inventory     # Defines Host configurations and widest scoped variables
+├─📁 pki           # Self-signed CA and subordinate CA certs for whole house and cluster
+├─📁 roles         # Ansible roles that define the actual steps to accomplish these tasks
+└─📁 terraform     # Terraform config for building VM hosts
+📁 playbooks       # Ansible playbooks
+```
+<!-- markdownlint-enable MD013 -->
 # 🖥️ Tech Stack
 
 ## Infrastructure
@@ -107,3 +199,176 @@
 |--------|----------------|------------|---------------|----------|--------------------------|
 |<img width="32" src="https://avatars.githubusercontent.com/u/10979201?s=200&v=4">| [FreeIPA][freeipa-uri] | `Infrastructure`| Full IdAM solution + PKI | Deployed | [![][freeipa-badge]][freeipa-img] |
 |<img width="32" src="https://github.com/MythTV/mythtv/raw/master/mythtv/html/images/icons/upnp_small_icon.png">|[MythTV][mythtv-url]| `Media` | Digital Video Recorder | Running directly on node | [![][mythtv-badge]][mythtv-gh] |
+
+# 🤝 Thank you
+
+- [bjw-s/home-ops](https://github.com/bjw-s/home-ops)
+- [onedr0p/home-ops](https://github.com/onedr0p/home-ops)
+- [khuedoan/homelab](https://github.com/khuedoan/homelab)
+- [gruberdev/homelab](https://github.com/gruberdev/homelab)
+- [RickCoxDev/home-cluster](https://github.com/RickCoxDev/home-cluster)
+- [billimek/k8s-gitops](https://github.com/billimek/k8s-gitops)
+- [blackjid/k8s-gitops](https://github.com/blackjid/k8s-gitops)
+- [carpenike/k8s-gitops](https://github.com/carpenike/k8s-gitops)
+- [K8s-At-Home Project](https://k8s-at-home.com)
+
+<details>
+<summary><h3>&nbsp;📈 Repository Stats</h3></summary>
+<br/>
+
+## ⭐ Stargazers
+
+[![Star History Chart](https://api.star-history.com/svg?repos=clearlybaffled/homelab&type=Date)](https://star-history.com/#clearlybaffled/homelab&Date)
+
+## 🎶 Repobeats
+
+![Alt](https://repobeats.axiom.co/api/embed/d99fddfc840ac253fd4c4975137e1561dfaf128d.svg "Repobeats analytics image")
+
+</details>
+
+[ansible-uri]: https://www.ansible.com
+[argocd-uri]: https://argoproj.github.io
+
+[mysql-uri]: https://www.mysql.com
+[mysql-badge]: https://img.shields.io/badge/bitnami/mysql-v9.14.3-blue?logo=helm
+[mysql-chart]: https://artifacthub.io/packages/helm/bitnami/mysql
+
+[postgres-uri]: https://www.postgresql.org
+[cnpg-uri]:https://cloudnative-pg.io/
+[cnpg-badge]: https://img.shields.io/badge/cloudnative--pg-v1.22.1-blue?logo=helm
+[cnpg-chart]: https://artifacthub.io/packages/helm/cloudnative-pg/cloudnative-pg
+
+[redis-uri]: https://redis.io
+[redis-badge]: https://img.shields.io/badge/bitnami/redis-v18.19.2-blue?logo=helm
+[redis-chart]: https://artifacthub.io/packages/helm/bitnami/redis
+
+[grocy-uri]: https://github.com/grocy/grocy
+[grocy-img]: https://hub.docker.com/r/grocy/grocy-frontend
+[grocy-badge]: https://img.shields.io/badge/grocy/grocy--frontend-v4.0.3-blue?logo=docker
+
+[mealie-url]: https://mealie.io/
+[mealie-badge]: https://img.shields.io/badge/mealie-v1.3.2-blue?logo=docker
+[mealie-docker]: https://ghcr.io/mealie-recipes/mealie
+
+[mythtv-url]: https://www.mythtv.org
+[mythtv-badge]: https://img.shields.io/badge/mythtv-v0.33-blue?logo=github
+[mythtv-gh]: https://github.com/MythTV/MythTV
+
+[homepage-uri]: https://gethomepage.dev/
+[homepage-badge]: https://img.shields.io/badge/jameswynn/homepage-v1.2.3-blue?logo=helm
+[homepage-chart]: https://jameswynn.github.io/helm-charts/
+
+[grafana-badge]: https://img.shields.io/badge/grafana-v9.5.2-blue?logo=helm
+[grafana-uri]: https://grafana.com
+[grafana-chart]: https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
+
+[paperless-uri]: https://docs.paperless-ngx.com/
+[paperless-badge]: https://img.shields.io/badge/paperless--ngx-v2.6.2-blue?logo=docker
+[paperless-img]: https://ghcr.io/paperless-ngx/paperless-ngx
+[node-hp-scan-to-badge]: https://img.shields.io/badge/manuc66/node--hp--scan--to-v1.4.2-blue?logo=docker
+[node-hp-scan-to-img]: https://hub.docker.com/repository/docker/manuc66/node-hp-scan-to
+
+[linkding-uri]: https://github.com/sissbruecker/linkding
+[linkding-badge]: https://img.shields.io/badge/linkding-1.19.1-blue?logo=docker
+[linkding-img]: https://hub.docker/com/r/sissbruecker/linkding
+
+[linkace-uri]: https://www.linkace.org/
+[linkace-badge]: https://img.shields.io/badge/linkace-v1.12.2-blue?logo=docker
+[linkace-img]: https://hub.docker.com/r/linkace/linkace
+
+[linkwarden-uri]: https://linkwarden.app
+[linkwarden-badge]: https://img.shields.io/badge/linkwarden-v2.4.8-blue?logo=docker
+[linkwarden-img]: https://ghcr.io/linkwarden/linkwarden
+
+[netbox-uri]: https://netbox.dev
+[netbox-chart]: https://artifacthub.io/packages/helm/bootc/netbox
+[netbox-badge]: https://img.shields.io/badge/bootc/netbox-4.1.1-blue?logo=helm
+[vault-uri]: https://www.vaultproject.io
+
+[freeipa-uri]: https://wwww.freeipa.org
+[freeipa-img]: https://quay.io/repository/freeipa/freeipa-server
+[freeipa-badge]: https://img.shields.io/badge/freeipa--server-fedora--38-blue.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjM2IiB2aWV3Qm94PSIwIDAgMjU2IDIzNiI+PHBhdGggZmlsbD0iIzQwQjRFNSIgZD0ibTIwMC4xMzQgMGw1NS41NTUgMTE3LjUxNGwtNTUuNTU1IDExNy41MThoLTQ3LjI5NWw1NS41NTUtMTE3LjUxOEwxNTIuODQgMGg0Ny4yOTVaTTExMC4wOCA5OS44MzZsMjAuMDU2LTM4LjA5MmwtMi4yOS04Ljg2OEwxMDIuODQ3IDBINTUuNTUybDQ4LjY0NyAxMDIuODk4bDUuODgxLTMuMDYyWm0xNy43NjYgNzQuNDMzbC0xNy4zMzMtMzkuMDM0bC02LjMxNC0zLjEwMWwtNDguNjQ3IDEwMi44OThoNDcuMjk1bDI1LTUyLjg4di03Ljg4M1oiLz48cGF0aCBmaWxsPSIjMDAzNzY0IiBkPSJNMTUyLjg0MiAyMzUuMDMyTDk3LjI4NyAxMTcuNTE0TDE1Mi44NDIgMGg0Ny4yOTVsLTU1LjU1NSAxMTcuNTE0bDU1LjU1NSAxMTcuNTE4aC00Ny4yOTVabS05Ny4yODcgMEwwIDExNy41MTRMNTUuNTU1IDBoNDcuMjk2TDQ3LjI5NSAxMTcuNTE0bDU1LjU1NiAxMTcuNTE4SDU1LjU1NVoiLz48L3N2Zz4=
+
+[qbittorrent-uri]: https://www.qbittorrent.org/
+[qbittorrent-img]: https://ghcr.io/onedr0p/qbittorrent
+[qbittorrent-badge]: https://img.shields.io/badge/onedr0p/qbittorrent-4.6.2-blue?logo=docker
+
+[lidarr-uri]: https://lidarr.audio
+[lidarr-img]: https://ghcr.io/onedr0p/lidarr
+[lidarr-badge]: https://img.shields.io/badge/onedr0p/lidarr-2.0.7-blue?logo=docker
+
+[radarr-uri]: https://radarr.video
+[radarr-img]: https://ghcr.io/onedr0p/radarr
+[radarr-badge]: https://img.shields.io/badge/onedr0p/radarr-5.2.6-blue?logo=docker
+
+[sonarr-uri]: https://sonarr.tv
+[sonarr-img]: https://ghcr.io/onedr0p/sonarr
+[sonarr-badge]: https://img.shields.io/badge/onedr0p/sonarr--develop-4.0.0.725-blue?logo=docker
+
+[prowlarr-uri]: https://github.com/Prowlarr/Prowlarr
+[prowlarr-img]: https://ghcr.io/onedr0p/prowlarr
+[prowlarr-badge]: https://img.shields.io/badge/onedr0p/prowlarr-1.11.4-blue?logo=docker
+
+[readarr-uri]: https://readarr.com
+[readarr-img]: https://ghcr.io/onedr0p/readarr-develop
+[readarr-badge]: https://img.shields.io/badge/onedr0p/readarr--develop-0.3.14-blue?logo=docker
+
+[bazarr-uri]: https://www.bazarr.media/
+[bazarr-img]: https://ghcr.io/onedr0p/bazarr
+[bazarr-badge]: https://img.shields.io/badge/onedr0p/bazarr-1.4.0-blue?logo=docker
+
+[calibre-uri]: https://calibre-ebook.com/
+[calibre-img]: https://ghcr.io/linuxserver/calibre
+[calibre-web-img]: https://ghcr.io/linuxserver/calibre-web
+[calibre-badge]:https://img.shields.io/badge/calibre-version--v7.3.0-blue?logo=linuxserver
+[calibre-web-badge]: https://img.shields.io/badge/calibre--web-version--0.6.21-blue?logo=linuxserver
+
+[audiobookshelf-uri]: https://www.audiobookshelf.org/
+[audiobookshelf-img]: https://ghcr.io/advplyr/audiobookshelf
+[audiobookshelf-badge]: https://img.shields.io/badge/advplyr/audiobookshelf-2.7.0-blue?logo=docker
+
+[jellyfin-uri]: https://jellyfin.org
+[jellyfin-img]: https://ghcr.io/onedr0p/jellyfin
+[jellyfin-badge]: https://img.shields.io/badge/onedr0p/jellyfin-10.8.11-blue?logo=docker
+
+[immich-uri]: https://immich.app
+[immich-chart]: https://immich-app.github.io/immich-charts
+[immich-badge]: https://img.shields.io/badge/immich-v1.94.1-blue?logo=docker
+
+[photoprism-uri]: https://www.photoprism.app/
+
+[stirling-pdf-uri]: https://stirlingtools.com/
+[stirling-pdf-badge]: https://img.shields.io/badge/frooodle/s--pdf-0.22.2-blue?logo=docker
+[stirling-pdf-img]: https://hub.docker.com/r/frooodle/s-pdf
+
+[home-assistant-uri]: https://www.home-assistant.io/
+[home-assistant-badge]: https://img.shields.io/badge/home--assistant-2024.2.2-blue?logo=docker
+[home-assistant-img]: https://ghcr.io/home-assistant/home-assistant
+
+[homebox-uri]: https://hay-kot.github.io/homebox/
+[homebox-badge]: https://img.shields.io/badge/hay--kot/homebox-0.13.2-blue?logo=docker
+[homebox-img]: https://ghcr.io/hay-kot/homebox
+
+[wger-uri]: https://wger.de/en/software/features
+[wger-badge]: https://img.shields.io/badge/wger/server-2.3--dev-blue?logo=docker
+[wger-img]: https://hub.docker.com/r/wger/server
+
+[kubeshark-uri]: https://www.kubeshark.co/
+[kubeshark-badge]: https://img.shields.io/badge/kubeshark-52.1.9-blue?logo=helm
+[kubeshark-chart]: https://artifacthub.io/packages/helm/kubeshark-helm-charts/kubeshark
+
+[listenbrainz-uri]: https://listenbrainz.org
+
+[frigate-uri]: https://frigate.video/
+[frigate-badge]: https://img.shields.io/badge/blakeblackshear/frigate-0.13.2-blue?logo=docker
+[frigate-img]: https://ghcr.io/blakeblackshear/frigate
+[wyze-bridge-badge]: https://img.shields.io/badge/mrtl8/wyze--bridge-2.5.1--qsv-blue?logo=docker
+[wyze-bridge-img]: https://hub.docker.com/r/mrlt8/wyze-bridge
+
+[mosquitto-uri]: https://mosquitto.org/
+[mosquitto-img]: https://public.ecr.aws/docker/library/eclipse-mosquitto
+[mosquitto-badge]: https://img.shields.io/badge/eclipse--mosquitto-2.0.18-blue?logo=docker
+
+[keycloak-url]: https://www.keycloak.org/
+[keycloak-operator]: https://operatorhub.io/operator/keycloak-operator
+[keycloak-badge]: https://img.shields.io/badge/keycloak-24.0.1-blue.svg?logo=data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDMwLjgwMDUgNDkwLjYgNDM2LjkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGcgZmlsbD0iIzYxREFGQiIgdHJhbnNmb3JtPSJtYXRyaXgoMC45OTk5OTk5OTk5OTk5OTk5LCAwLCAwLCAwLjk5OTk5OTk5OTk5OTk5OTksIC0xNzUuNzAwMDk3NjY0NDUwMjUsIC00Ny4xOTk0OTU4Njk4NDg1MjYpIj4KICAgIDxwYXRoIGQ9Ik02NjYuMyAyOTYuNWMwLTMyLjUtNDAuNy02My4zLTEwMy4xLTgyLjQgMTQuNC02My42IDgtMTE0LjItMjAuMi0xMzAuNC02LjUtMy44LTE0LjEtNS42LTIyLjQtNS42djIyLjNjNC42IDAgOC4zLjkgMTEuNCAyLjYgMTMuNiA3LjggMTkuNSAzNy41IDE0LjkgNzUuNy0xLjEgOS40LTIuOSAxOS4zLTUuMSAyOS40LTE5LjYtNC44LTQxLTguNS02My41LTEwLjktMTMuNS0xOC41LTI3LjUtMzUuMy00MS42LTUwIDMyLjYtMzAuMyA2My4yLTQ2LjkgODQtNDYuOVY3OGMtMjcuNSAwLTYzLjUgMTkuNi05OS45IDUzLjYtMzYuNC0zMy44LTcyLjQtNTMuMi05OS45LTUzLjJ2MjIuM2MyMC43IDAgNTEuNCAxNi41IDg0IDQ2LjYtMTQgMTQuNy0yOCAzMS40LTQxLjMgNDkuOS0yMi42IDIuNC00NCA2LjEtNjMuNiAxMS0yLjMtMTAtNC0xOS43LTUuMi0yOS00LjctMzguMiAxLjEtNjcuOSAxNC42LTc1LjggMy0xLjggNi45LTIuNiAxMS41LTIuNlY3OC41Yy04LjQgMC0xNiAxLjgtMjIuNiA1LjYtMjguMSAxNi4yLTM0LjQgNjYuNy0xOS45IDEzMC4xLTYyLjIgMTkuMi0xMDIuNyA0OS45LTEwMi43IDgyLjMgMCAzMi41IDQwLjcgNjMuMyAxMDMuMSA4Mi40LTE0LjQgNjMuNi04IDExNC4yIDIwLjIgMTMwLjQgNi41IDMuOCAxNC4xIDUuNiAyMi41IDUuNiAyNy41IDAgNjMuNS0xOS42IDk5LjktNTMuNiAzNi40IDMzLjggNzIuNCA1My4yIDk5LjkgNTMuMiA4LjQgMCAxNi0xLjggMjIuNi01LjYgMjguMS0xNi4yIDM0LjQtNjYuNyAxOS45LTEzMC4xIDYyLTE5LjEgMTAyLjUtNDkuOSAxMDIuNS04Mi4zem0tMTMwLjItNjYuN2MtMy43IDEyLjktOC4zIDI2LjItMTMuNSAzOS41LTQuMS04LTguNC0xNi0xMy4xLTI0LTQuNi04LTkuNS0xNS44LTE0LjQtMjMuNCAxNC4yIDIuMSAyNy45IDQuNyA0MSA3Ljl6bS00NS44IDEwNi41Yy03LjggMTMuNS0xNS44IDI2LjMtMjQuMSAzOC4yLTE0LjkgMS4zLTMwIDItNDUuMiAyLTE1LjEgMC0zMC4yLS43LTQ1LTEuOS04LjMtMTEuOS0xNi40LTI0LjYtMjQuMi0zOC03LjYtMTMuMS0xNC41LTI2LjQtMjAuOC0zOS44IDYuMi0xMy40IDEzLjItMjYuOCAyMC43LTM5LjkgNy44LTEzLjUgMTUuOC0yNi4zIDI0LjEtMzguMiAxNC45LTEuMyAzMC0yIDQ1LjItMiAxNS4xIDAgMzAuMi43IDQ1IDEuOSA4LjMgMTEuOSAxNi40IDI0LjYgMjQuMiAzOCA3LjYgMTMuMSAxNC41IDI2LjQgMjAuOCAzOS44LTYuMyAxMy40LTEzLjIgMjYuOC0yMC43IDM5Ljl6bTMyLjMtMTNjNS40IDEzLjQgMTAgMjYuOCAxMy44IDM5LjgtMTMuMSAzLjItMjYuOSA1LjktNDEuMiA4IDQuOS03LjcgOS44LTE1LjYgMTQuNC0yMy43IDQuNi04IDguOS0xNi4xIDEzLTI0LjF6TTQyMS4yIDQzMGMtOS4zLTkuNi0xOC42LTIwLjMtMjcuOC0zMiA5IC40IDE4LjIuNyAyNy41LjcgOS40IDAgMTguNy0uMiAyNy44LS43LTkgMTEuNy0xOC4zIDIyLjQtMjcuNSAzMnptLTc0LjQtNTguOWMtMTQuMi0yLjEtMjcuOS00LjctNDEtNy45IDMuNy0xMi45IDguMy0yNi4yIDEzLjUtMzkuNSA0LjEgOCA4LjQgMTYgMTMuMSAyNCA0LjcgOCA5LjUgMTUuOCAxNC40IDIzLjR6TTQyMC43IDE2M2M5LjMgOS42IDE4LjYgMjAuMyAyNy44IDMyLTktLjQtMTguMi0uNy0yNy41LS43LTkuNCAwLTE4LjcuMi0yNy44LjcgOS0xMS43IDE4LjMtMjIuNCAyNy41LTMyem0tNzQgNTguOWMtNC45IDcuNy05LjggMTUuNi0xNC40IDIzLjctNC42IDgtOC45IDE2LTEzIDI0LTUuNC0xMy40LTEwLTI2LjgtMTMuOC0zOS44IDEzLjEtMy4xIDI2LjktNS44IDQxLjItNy45em0tOTAuNSAxMjUuMmMtMzUuNC0xNS4xLTU4LjMtMzQuOS01OC4zLTUwLjYgMC0xNS43IDIyLjktMzUuNiA1OC4zLTUwLjYgOC42LTMuNyAxOC03IDI3LjctMTAuMSA1LjcgMTkuNiAxMy4yIDQwIDIyLjUgNjAuOS05LjIgMjAuOC0xNi42IDQxLjEtMjIuMiA2MC42LTkuOS0zLjEtMTkuMy02LjUtMjgtMTAuMnpNMzEwIDQ5MGMtMTMuNi03LjgtMTkuNS0zNy41LTE0LjktNzUuNyAxLjEtOS40IDIuOS0xOS4zIDUuMS0yOS40IDE5LjYgNC44IDQxIDguNSA2My41IDEwLjkgMTMuNSAxOC41IDI3LjUgMzUuMyA0MS42IDUwLTMyLjYgMzAuMy02My4yIDQ2LjktODQgNDYuOS00LjUtLjEtOC4zLTEtMTEuMy0yLjd6bTIzNy4yLTc2LjJjNC43IDM4LjItMS4xIDY3LjktMTQuNiA3NS44LTMgMS44LTYuOSAyLjYtMTEuNSAyLjYtMjAuNyAwLTUxLjQtMTYuNS04NC00Ni42IDE0LTE0LjcgMjgtMzEuNCA0MS4zLTQ5LjkgMjIuNi0yLjQgNDQtNi4xIDYzLjYtMTEgMi4zIDEwLjEgNC4xIDE5LjggNS4yIDI5LjF6bTM4LjUtNjYuN2MtOC42IDMuNy0xOCA3LTI3LjcgMTAuMS01LjctMTkuNi0xMy4yLTQwLTIyLjUtNjAuOSA5LjItMjAuOCAxNi42LTQxLjEgMjIuMi02MC42IDkuOSAzLjEgMTkuMyA2LjUgMjguMSAxMC4yIDM1LjQgMTUuMSA1OC4zIDM0LjkgNTguMyA1MC42LS4xIDE1LjctMjMgMzUuNi01OC40IDUwLjZ6TTMyMC44IDc4LjR6Ii8+CiAgICA8Y2lyY2xlIGN4PSI0MjAuOSIgY3k9IjI5Ni41IiByPSI0NS43Ii8+CiAgICA8cGF0aCBkPSJNNTIwLjUgNzguMXoiLz4KICA8L2c+Cjwvc3ZnPg==#al5RUqUzTx
