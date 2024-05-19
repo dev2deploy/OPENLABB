@@ -1,12 +1,14 @@
 # OPENLABB
-Opensource (premised) development lab for localized testing of modernizing, emergent technologies.
 
+```diff
+@@An opensource (premised) development lab for localized testing of modernizing, emergent technologies.@@
+```
 The repository is mostly focused on a modest kubernetes cluster with one control plane/node running all of our self hosted services and storage,
 but it also serves as the Infrastructure-as-Code (IaC) for an entire home network and devices, to include: a VyOS gateway/firewall,
 a couple of workstations, wireless devices, and a Ubiquiti Unifi switch.
 Ultimately, this will include all applications for managing home IT systems.
 
-# Build deets: `devlab`
+# `devlab` build deets 
 ![dev2deploy-cover-1500x500](https://github.com/dev2deploy/OPENLABB/assets/170257998/7f375c7c-f1da-4cec-b0c6-00a9754268b0)
 
 This **OPENLABB** Repository contains devlab documentation files: notes, setups, and configurations for infrastructure, applications, networking, +more.
@@ -15,7 +17,7 @@ This **OPENLABB** Repository contains devlab documentation files: notes, setups,
 
 Info is created as free resources to be used in your own specific use cases. If you're searching for detailed, in-depth tutorials on some tools or technologies, check out our [YouTube Channel](https://www.youtube.com/@dev2deploy) or [BLOG](https://dev2deploy.io).
 
-## 🤯 Features
+## `devlab` Features
 
 - [x] Kubernetes cluster deployment using kubeadm
 - [x] Infrastructure Automation with Ansible to provision hosts, clusters, devices, etc.
@@ -25,7 +27,7 @@ Info is created as free resources to be used in your own specific use cases. If 
 - [ ] RADIUS server
 - [ ] Remote access via VPN
 
-## ⌨️ Getting Started
+## `devlab` Getting Started
 
 ```console
 python3 -m venv .venv
@@ -35,7 +37,7 @@ ansible-galaxy collection install -U -r requirements.yaml
 ansible-playbook homelab.yml
 ```
 
-## TECH STACK
+## `devlab` TECH STACK
 |[Click Here](https://github.com/dev2deploy/OPENLABB/devlab-techstack/)|
 |---|
 
@@ -144,15 +146,5 @@ This Git repository contains the following top level directories.
 - [carpenike/k8s-gitops](https://github.com/carpenike/k8s-gitops)
 - [K8s-At-Home Project](https://k8s-at-home.com)
 
-<details>
-<summary><h3>&nbsp;📈 Repository Stats</h3></summary>
-<br/>
 
-## ⭐ Stargazers
-
-[![Star History Chart](https://api.star-history.com/svg?repos=clearlybaffled/homelab&type=Date)](https://star-history.com/#clearlybaffled/homelab&Date)
-
-## 🎶 Repobeats
-
-![Alt](https://repobeats.axiom.co/api/embed/d99fddfc840ac253fd4c4975137e1561dfaf128d.svg "Repobeats analytics image")
 
