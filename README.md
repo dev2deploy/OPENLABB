@@ -37,7 +37,7 @@ ansible-galaxy collection install -U -r requirements.yaml
 ansible-playbook homelab.yml
 ```
 
-## `devlab` TECH STACK
+## `devlab` Tech Stack
 |[Click Here](https://github.com/dev2deploy/OPENLABB/devlab-techstack/)|
 |---|
 
