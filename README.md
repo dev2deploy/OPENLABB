@@ -1,43 +1,63 @@
 # OPENLABB
 Opensource (premised) development lab for localized testing of modernizing, emergent technologies.
 
-# Build deets re `devlab`
+The repository is mostly focused on a modest kubernetes cluster with one control plane/node running all of our self hosted services and storage,
+but it also serves as the Infrastructure-as-Code (IaC) for an entire home network and devices, to include: a VyOS gateway/firewall,
+a couple of workstations, wireless devices, and a Ubiquiti Unifi switch.
+Ultimately, this will include all applications for managing home IT systems.
+
+# Build deets: `devlab`
 
 [![Welcome](https://cnd-prod-1.s3.us-west-004.backblazeb2.com/new-banner4-scaled-for-github.jpg)](https://youtu.be/apgp9egIKK8)
 
-**Hey, there!**
+This **OPENLABB** Repository contains devlab documentation files: notes, setups, and configurations for infrastructure, applications, networking, +more.
 
-**I’m Christian, and I’m passionate about creating educational tech content for IT Pros and Homelab nerds.**
+> :warning: Be aware, products can change over time. We do our best to keep up with the latest changes and releases, but please understand that this won’t always be the case.
 
-This Repository **Homelab** contains all my homelab documentation files. Here you'll find notes, setups, and configurations for infrastructure, applications, networking, and more.
+Info is created as free resources to be used in your own specific use cases. If you're searching for detailed, in-depth tutorials on some tools or technologies, check out our [YouTube Channel](https://www.youtube.com/@dev2deploy) or [BLOG](https://dev2deploy.io).
 
-> :warning: Be aware, products can change over time. I do my best to keep up with the latest changes and releases, but please understand that this won’t always be the case.
+## 🤯 Features
 
-I created them as free resources to be used in your specific use cases. If you're searching for detailed, in-depth tutorials on some tools or technologies, check out my [YouTube Channel](https://www.youtube.com/@christianlempa).
+- [x] Kubernetes cluster deployment using kubeadm
+- [x] Infrastructure Automation with Ansible to provision hosts, clusters, devices, etc.
+- [x] Offline Root CA / Scripted PKI management using `openssl(1)`
+- [x] Manage cluster state and apps using GitOps and ArgoCD
+- [x] FreeIPA server
+- [ ] RADIUS server
+- [ ] Remote access via VPN
+
+## ⌨️ Getting Started
+
+```console
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -U -r requirements.txt
+ansible-galaxy collection install -U -r requirements.yaml
+ansible-playbook homelab.yml
+```
 
 ## TECH STACK
-|[Click Here](https://github.com/dev2deploy/OPENLABB/tree/main/devlab-techstack/)|
+|[Click Here](https://github.com/dev2deploy/OPENLABB/devlab-techstack/)|
 |---|
 
 ## Contribution
 
-As this is my personal Homelab documentation, I don't accept any contributions. But feel free to fork this repository and use it for your own documentation.
+As this is our personal devlab documentation, we do not accept any contributions. Feel free to fork the repository and use it for your own documentation.
 
 ## Other Resources
 
-- [Dotfiles](https://github.com/christianlempa/dotfiles) - My personal configuration files on macOS
+- [Dotfiles](https://github.com/christianlempa/dotfiles) - Our config files on macOS
 - [Boilerplates](https://github.com/christianlempa/boilerplates) - Templates for various projects like Docker, K8S, Ansible, etc
 - [Cheat-Sheets](https://github.com/christianlempa/cheat-sheets) - Command Reference for various tools and technologies
-- [Videos](https://github.com/christianlempa/videos) - Documentation and project files for all my video tutorials on YouTube
+- [Videos](https://github.com/christianlempa/videos) - Documentation and project files for all our video tutorials on YouTube
 
 ## Support Us
 
-Creating high-quality videos and valuable resources that are accessible to everyone, free of charge, is a huge challenge. With your contribution, I can dedicate more time and effort into the creation process, which ultimately enhances the quality of the content. So, all your support, by becoming a member, truly makes a significant impact on what I do. And you’ll also get some cool benefits and perks in return, as a recognition of your support.
+Creating high-quality videos and valuable resources that are accessible to everyone, free of charge, is a huge challenge. With your contribution, we can dedicate more time and effort into the creation process, which ultimately enhances the quality of the content. So, all your support, by becoming a member, truly makes a significant impact on what we do. And you’ll also get some cool benefits and perks in return, as a recognition of your support.
 
-Remember, ***supporting me is entirely optional.*** Your choice to become a member or not won't change your access to my videos and resources. You are also welcome to reach out to me on Discord, if you have any questions or feedback.
+Remember, ***supporting us is entirely optional.*** Your choice to become a member or not won't change your access to my videos and resources. You are also welcome to reach out to us on Discord, if you have any questions or feedback.
 
-[https://www.patreon.com/christianlempa](https://www.patreon.com/christianlempa)
-
+[https://www.patreon.com/dev2deploy](https://www.patreon.com/dev2deploy)
 
 
 
@@ -63,32 +83,6 @@ Homelab
 [![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/clearlybaffled/homelab?style=flat-square)](https://libraries.io/github/clearlybaffled/homelab)
 </div>
 <br/>
-
-Welcome to my homelab!
-The repository is mostly focused on a modest kubernetes cluster with one control plane/node running all of my self hosted services and storage,
-but it also serves as the Infrastructure-as-Code (IaC) for my entire home network and devices, to include: an OpnSense gateway/firewall,
-a couple of workstations, wireless devices, and a Cisco switch.
-Ultimately, this will include all applications for managing home IT systems.
-
-## 🤯 Features
-
-- [x] Kubernetes cluster deployment using kubeadm
-- [x] Infrastructure Automation with Ansible to provision hosts, clusters, devices, etc.
-- [x] Offline Root CA / Scripted PKI management using `openssl(1)`
-- [x] Manage cluster state and apps using GitOps and ArgoCD
-- [x] FreeIPA server
-- [ ] RADIUS server
-- [ ] Remote access via VPN
-
-## ⌨️ Getting Started
-
-```console
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -U -r requirements.txt
-ansible-galaxy collection install -U -r requirements.yaml
-ansible-playbook homelab.yml
-```
 
 # 🍇 Cluster
 
