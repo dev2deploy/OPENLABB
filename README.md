@@ -3,8 +3,9 @@
 ```diff
 @@An opensource (premised) development lab for localized testing of modernizing, emergent technologies.@@
 ```
+xxx
 The repository is mostly focused on a modest kubernetes cluster with one control plane/node running all of our self hosted services and storage,
-but it also serves as the Infrastructure-as-Code (IaC) for an entire home network and devices, to include: a VyOS gateway/firewall,
+but it also serves as the Infrastructure-as-Code (IaC) for an entire homelab network and devices, to include: a VyOS gateway/firewall,
 a couple of workstations, wireless devices, and a Ubiquiti Unifi switch.
 Ultimately, this will include all applications for managing home IT systems.
 
@@ -18,7 +19,10 @@ This **OPENLABB** Repository contains devlab documentation files: notes, setups,
 Info is created as free resources to be used in your own specific use cases. If you're searching for detailed, in-depth tutorials on some tools or technologies, check out our [YouTube Channel](https://www.youtube.com/@dev2deploy) or [BLOG](https://dev2deploy.io).
 
 ## `devlab` Features
-
+Primary deployments and features within the devlab:  
+- [x] OpenStack and Red Hat OpenShift as bare-metal hypervisors for AI-ML-HPC, blockchain and container development and testing
+- [x] VyOS implemented as a firewall with Bitdefender Gravity Zone for security are deployed via Proxmox-Ceph ha-clusters
+- [x] TrueNas Scale cluster has also been implemented as NAS
 - [x] Kubernetes cluster deployment using kubeadm
 - [x] Infrastructure Automation with Ansible to provision hosts, clusters, devices, etc.
 - [x] Offline Root CA / Scripted PKI management using `openssl(1)`
