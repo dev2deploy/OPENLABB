@@ -16,7 +16,7 @@ This Repository **Homelab** contains all my homelab documentation files. Here yo
 I created them as free resources to be used in your specific use cases. If you're searching for detailed, in-depth tutorials on some tools or technologies, check out my [YouTube Channel](https://www.youtube.com/@christianlempa).
 
 ## TECH STACK
-|[Click Here](https://github.com/)|
+|[Click Here](https://github.com/dev2deploy/OPENLABB/blob/main/devlab-techstack/README.md)|
 |---|
 
 ## Contribution
@@ -30,7 +30,7 @@ As this is my personal Homelab documentation, I don't accept any contributions. 
 - [Cheat-Sheets](https://github.com/christianlempa/cheat-sheets) - Command Reference for various tools and technologies
 - [Videos](https://github.com/christianlempa/videos) - Documentation and project files for all my video tutorials on YouTube
 
-## Support me
+## Support Us
 
 Creating high-quality videos and valuable resources that are accessible to everyone, free of charge, is a huge challenge. With your contribution, I can dedicate more time and effort into the creation process, which ultimately enhances the quality of the content. So, all your support, by becoming a member, truly makes a significant impact on what I do. And you’ll also get some cool benefits and perks in return, as a recognition of your support.
 
