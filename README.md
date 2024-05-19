@@ -1,5 +1,18 @@
 # OPENLABB
-Opensource (premised) development lab for AI-ML-HPC-Blockchain
+Opensource (premised) development lab for localized testing of:
+- Artificial Intelligence
+- Blockchain
+- Compute
+- Containers
+- Edge
+- High-Performance Computing
+- Hypervisors
+- Internet of Things
+- Machine Learning
+- Networking
+- Security
+- Storage
+- Virtualization
 # Build deets re `devlab`
 
 [![Welcome](https://cnd-prod-1.s3.us-west-004.backblazeb2.com/new-banner4-scaled-for-github.jpg)](https://youtu.be/apgp9egIKK8)
