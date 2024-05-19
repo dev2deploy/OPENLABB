@@ -16,7 +16,7 @@ This Repository **Homelab** contains all my homelab documentation files. Here yo
 I created them as free resources to be used in your specific use cases. If you're searching for detailed, in-depth tutorials on some tools or technologies, check out my [YouTube Channel](https://www.youtube.com/@christianlempa).
 
 ## TECH STACK
-|[Click Here](https://github.com/dev2deploy/OPENLABB/blob/main/devlab-techstack/)|
+|[Click Here](https://github.com/dev2deploy/OPENLABB/tree/main/devlab-techstack/)|
 |---|
 
 ## Contribution
