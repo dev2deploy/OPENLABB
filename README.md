@@ -137,6 +137,8 @@ This Git repository contains the following top level directories.
 
 # 🤝 Thank you
 
+- [ChristianLempa/homelab](https://github.com/ChristianLempa/homelab)
+- [clearlybaffled/homelab](https://github.com/clearlybaffled/homelab)
 - [bjw-s/home-ops](https://github.com/bjw-s/home-ops)
 - [onedr0p/home-ops](https://github.com/onedr0p/home-ops)
 - [khuedoan/homelab](https://github.com/khuedoan/homelab)
