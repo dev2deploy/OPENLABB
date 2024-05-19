@@ -1,0 +1,69 @@
+---
+- name: Gather Cluster Facts
+  hosts:
+    - k8s_cluster
+    - localhost
+  tags: always
+  become: true
+  gather_facts: true
+
+- name: Kubernetes Node setup
+  hosts: kube_node
+  gather_facts: false
+  any_errors_fatal: true
+  become: true
+  roles:
+    - role: kubernetes/node
+      tags: node
+    - role: download
+      tags: download
+      vars:
+        download_container: false
+      when: not skip_downloads
+    - role: containers/runtime
+      tags: cri
+    - role: download
+      tags: download
+      when: not skip_downloads
+    - role: kubernetes/kubelet
+      tags: kubelet
+
+- name: Install control plane
+  hosts: kube_control_plane
+  gather_facts: false
+  any_errors_fatal: true
+  become: true
+  tags: control_plane
+  roles:
+    - kubernetes/control_plane
+
+- name: Set up cluster infrastructure services
+  hosts: localhost
+  gather_facts: false
+  any_errors_fatal: true
+  tags: infra
+  roles:
+    - role: kubernetes/client
+      tags: client
+    - role: containers/network
+      tags: network
+    - role: containers/storage
+      tags: storage
+
+- name: Startup Cluster applications
+  hosts: localhost
+  gather_facts: true
+  tags:
+    - bootstrap
+  tasks:
+    - name: Start ArgoCD
+      include_role:
+        name: apps
+      vars:
+        app_deploy_list:
+          - argocd
+    - name: Bootstrap cluster as ArgoCD App-of-Apps 
+      kubernetes.core.k8s:
+        src: "{{ (cluster_dir, 'cluster.yaml') | path_join }}"
+        server_side_apply:
+          field_manager: ansible
