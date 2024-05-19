@@ -135,8 +135,10 @@ This Git repository contains the following top level directories.
 ```
 <!-- markdownlint-enable MD013 -->
 
-# 🤝 Thank you
+# 🎩 Tip of the Cap goes to:
 
+- [cloudconsulted](https://github.com/cloudconsulted)
+- [röötfoo](https://github.com/R00TFOO)
 - [ChristianLempa/homelab](https://github.com/ChristianLempa/homelab)
 - [clearlybaffled/homelab](https://github.com/clearlybaffled/homelab)
 - [bjw-s/home-ops](https://github.com/bjw-s/home-ops)
