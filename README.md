@@ -7,8 +7,7 @@ a couple of workstations, wireless devices, and a Ubiquiti Unifi switch.
 Ultimately, this will include all applications for managing home IT systems.
 
 # Build deets: `devlab`
-
-[![Welcome](https://cnd-prod-1.s3.us-west-004.backblazeb2.com/new-banner4-scaled-for-github.jpg)](https://youtu.be/apgp9egIKK8)
+![dev2deploy-cover-1500x500](https://github.com/dev2deploy/OPENLABB/assets/170257998/7f375c7c-f1da-4cec-b0c6-00a9754268b0)
 
 This **OPENLABB** Repository contains devlab documentation files: notes, setups, and configurations for infrastructure, applications, networking, +more.
 
