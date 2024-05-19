@@ -130,7 +130,7 @@ This Git repository contains the following top level directories.
 ```
 <!-- markdownlint-enable MD013 -->
 
-# 🎩 Tip of the Cap goes to:
+# 🎩 Tip of the Cap:
 
 - [cloudconsulted](https://github.com/cloudconsulted)
 - [röötfoo](https://github.com/R00TFOO)
