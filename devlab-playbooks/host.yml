@@ -1,0 +1,25 @@
+---
+- name: Workstation Provisioning
+  hosts: workstations
+  gather_facts: true
+  become: true
+  tags: workstation
+  roles:
+    - workstation
+
+- name: Server Provisioning
+  hosts: servers
+  gather_facts: true
+  any_errors_fatal: true
+  become: true
+  tags: server
+  roles:
+    - server
+    - dvb
+
+- name: KVM setup
+  hosts: hypervisor
+  become: true
+  tags: kvm
+  roles:
+    - server/kvm
